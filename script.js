@@ -5,29 +5,29 @@ function computerPlay() {
   return computerSelection;
 }
 
-// Receive input from player and edit the input format
+// Receive input from player and edit the input format to standardize choices
 function playerPlay() {
-  const askPlayer = window.prompt("Choose Rock, Paper, or Scissors");
+  let askPlayer = window.prompt("Choose Rock, Paper, or Scissors");
   let pChoice = askPlayer.toLowerCase();
   let playerSelection = pChoice.charAt(0).toUpperCase() + pChoice.slice(1);
   return playerSelection;
 }
 
-// Win/Loss/Tie Counter
+// Win/Loss/Tie Counters
 let playerWin = 0;
 let playerLoss = 0;
 let playerTie = 0;
 
-// Compare the computer's input against player's input to determine the winner
+// Compare the player's input to the computer's input to determine the winner
 function playRound(playerSelection, computerSelection) {
-  // Checking for tie
+  // Checking for a tie
   if (playerSelection === computerSelection) {
     alert(`It is a tie! ${playerSelection} ties with ${computerSelection}.`);
     ++playerTie;
     console.log(`Player Tie: ${playerTie}`);
   }
 
-  // Checking for Rock
+  // Checking for Rock as selection
   if (playerSelection === "Rock") {
     if (computerSelection === "Scissors") {
       alert(`You win! ${playerSelection} beats ${computerSelection}.`);
@@ -40,7 +40,7 @@ function playRound(playerSelection, computerSelection) {
     }
   }
 
-  // Checking for Paper
+  // Checking for Paper as selection
   if (playerSelection === "Paper") {
     if (computerSelection === "Scissors") {
       alert(`You lose! ${playerSelection} loses to ${computerSelection}.`);
@@ -53,7 +53,7 @@ function playRound(playerSelection, computerSelection) {
     }
   }
 
-  // Checking for Scissors
+  // Checking for Scissors as selection
   if (playerSelection === "Scissors") {
     if (computerSelection === "Paper") {
       alert(`You win! ${playerSelection} beats ${computerSelection}`);
@@ -67,7 +67,7 @@ function playRound(playerSelection, computerSelection) {
   }
 }
 
-// Use loop to play 5 rounds in 1 game
+// Use for loop to play 5 rounds (1 game) and alerts player of status
 function game() {
   for (i = 0; i < 5; i++) {
     let computerSelection = computerPlay();
