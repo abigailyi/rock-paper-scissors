@@ -1,10 +1,11 @@
-// Randomize computer's input to play Rock, Paper, Scissors
+// Randomize computer's input from an array
 function computerPlay() {
   const hands = ["Rock", "Paper", "Scissors"];
   let computerSelection = hands[Math.floor(Math.random() * hands.length)];
   return computerSelection;
 }
 
+// Receive input from player and edit the input format
 function playerPlay() {
   const askPlayer = window.prompt("Choose Rock, Paper, or Scissors");
   let pChoice = askPlayer.toLowerCase();
@@ -66,6 +67,7 @@ function playRound(playerSelection, computerSelection) {
   }
 }
 
+// Use loop to play 5 rounds in 1 game
 function game() {
   for (i = 0; i < 5; i++) {
     let computerSelection = computerPlay();
