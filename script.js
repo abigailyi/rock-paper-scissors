@@ -1,90 +1,172 @@
-// Randomize computer's input from an array
-function computerPlay() {
-  const hands = ["Rock", "Paper", "Scissors"];
-  let computerSelection = hands[Math.floor(Math.random() * hands.length)];
-  return computerSelection;
-}
+// Defining all DOM Manipulation variables
+const gameInfo = document.getElementById("gameInfo");
+const gameMessage = document.getElementById("gameMsg");
+const playerScorePara = document.getElementById("playerScore");
+const computerScorePara = document.getElementById("computerScore");
+const playerSign = document.getElementById("playerHand");
+const computerSign = document.getElementById("computerHand");
+const rockBtn = document.getElementById("rockBtn");
+const paperBtn = document.getElementById("paperBtn");
+const scissorsBtn = document.getElementById("scissorsBtn");
+const gameOverModal = document.getElementById("gameOverModal");
+const gameOverMsg = document.getElementById("gameOverMsg");
+const overlay = document.getElementById("overlay");
+const restartBtn = document.getElementById("restartBtn");
 
-// Receive input from player and edit the input format to standardize choices
-function playerPlay() {
-  let askPlayer = window.prompt("Choose Rock, Paper, or Scissors");
-  let pChoice = askPlayer.toLowerCase();
-  let playerSelection = pChoice.charAt(0).toUpperCase() + pChoice.slice(1);
-  return playerSelection;
-}
+rockBtn.addEventListener("click", () => handleClick("ROCK"));
+paperBtn.addEventListener("click", () => handleClick("PAPER"));
+scissorsBtn.addEventListener("click", () => handleClick("SCISSORS"));
+restartBtn.addEventListener("click", restartGame);
+overlay.addEventListener("click", closeEndgameModal);
 
-// Win/Loss/Tie Counters
-let playerWin = 0;
-let playerLoss = 0;
-let playerTie = 0;
+let playerScore = 0;
+let computerScore = 0;
+let roundWinner = "";
 
-// Compare the player's input to the computer's input to determine the winner
 function playRound(playerSelection, computerSelection) {
-  // Checking for a tie
   if (playerSelection === computerSelection) {
-    alert(`It is a tie! ${playerSelection} ties with ${computerSelection}.`);
-    ++playerTie;
-    console.log(`Player Tie: ${playerTie}`);
+    roundWinner = "tie";
   }
-
-  // Checking for Rock as selection
-  if (playerSelection === "Rock") {
-    if (computerSelection === "Scissors") {
-      alert(`You win! ${playerSelection} beats ${computerSelection}.`);
-      ++playerWin;
-      console.log(`Player Win: ${playerWin}`);
-    } else if (computerSelection === "Paper") {
-      alert(`You lose! ${playerSelection} loses to ${computerSelection}.`);
-      ++playerLoss;
-      console.log(`Player Loss: ${playerLoss}`);
-    }
+  if (
+    (playerSelection === "ROCK" && computerSelection === "SCISSORS") ||
+    (playerSelection === "SCISSORS" && computerSelection === "PAPER") ||
+    (playerSelection === "PAPER" && computerSelection === "ROCK")
+  ) {
+    playerScore++;
+    roundWinner = "player";
   }
-
-  // Checking for Paper as selection
-  if (playerSelection === "Paper") {
-    if (computerSelection === "Scissors") {
-      alert(`You lose! ${playerSelection} loses to ${computerSelection}.`);
-      ++playerLoss;
-      console.log(`Player Loss: ${playerLoss}`);
-    } else if (computerSelection === "Rock") {
-      alert(`You win! ${playerSelection} beats ${computerSelection}.`);
-      ++playerWin;
-      console.log(`Player Win: ${playerWin}`);
-    }
+  if (
+    (computerSelection === "ROCK" && playerSelection === "SCISSORS") ||
+    (computerSelection === "SCISSORS" && playerSelection === "PAPER") ||
+    (computerSelection === "PAPER" && playerSelection === "ROCK")
+  ) {
+    computerScore++;
+    roundWinner = "computer";
   }
+  updateScore(roundWinner, playerSelection, computerSelection);
+}
 
-  // Checking for Scissors as selection
-  if (playerSelection === "Scissors") {
-    if (computerSelection === "Paper") {
-      alert(`You win! ${playerSelection} beats ${computerSelection}`);
-      ++playerWin;
-      console.log(`Player Win: ${playerWin}`);
-    } else if (computerSelection === "Rock") {
-      alert(`You lose! ${playerSelection} loses to ${computerSelection}`);
-      ++playerLoss;
-      console.log(`Player Loss: ${playerLoss}`);
-    }
+function getRandomChoice() {
+  let randomNumber = Math.floor(Math.random() * 3);
+  switch (randomNumber) {
+    case 0:
+      return "ROCK";
+    case 1:
+      return "PAPER";
+    case 2:
+      return "SCISSORS";
   }
 }
 
-// Use for loop to play 5 rounds (1 game) and alerts player of status
-function game() {
-  for (i = 0; i < 5; i++) {
-    let computerSelection = computerPlay();
-    let playerSelection = playerPlay();
-    playRound(playerSelection, computerSelection);
+function isGameOver() {
+  return playerScore === 5 || computerScore === 5;
+}
+
+function handleClick(playerSelection) {
+  if (isGameOver()) {
+    openEndgameModal();
+    return;
   }
 
-  if (playerWin > playerLoss) {
-    alert(`You won the game!`);
-    console.log(`Player won`);
-  } else if (playerLoss > playerWin) {
-    alert(`You lose the game!`);
-    console.log(`Player lost`);
-  } else {
-    alert(`The game is tied!`);
-    console.log(`Player tied`);
+  const computerSelection = getRandomChoice();
+  playRound(playerSelection, computerSelection);
+  updateChoices(playerSelection, computerSelection);
+  updateScore();
+  updateScoreMessage(roundWinner, playerSelection, computerSelection);
+
+  if (isGameOver()) {
+    openEndgameModal();
+    setGameResults();
   }
 }
 
-game();
+function updateChoices(playerSelection, computerSelection) {
+  switch (playerSelection) {
+    case "ROCK":
+      playerSign.textContent = "✊";
+      break;
+    case "PAPER":
+      playerSign.textContent = "✋";
+      break;
+    case "SCISSORS":
+      playerSign.textContent = "✌";
+      break;
+  }
+
+  switch (computerSelection) {
+    case "ROCK":
+      computerSign.textContent = "✊";
+      break;
+    case "PAPER":
+      computerSign.textContent = "✋";
+      break;
+    case "SCISSORS":
+      computerSign.textContent = "✌";
+      break;
+  }
+}
+
+function updateScore() {
+  if (roundWinner === "tie") {
+    gameInfo.textContent = "It's a tie!";
+  } else if (roundWinner === "player") {
+    gameInfo.textContent = "You won!";
+  } else if (roundWinner === "computer") {
+    gameInfo.textContent = "You lost!";
+  }
+
+  playerScorePara.textContent = `Player: ${playerScore}`;
+  computerScorePara.textContent = `Computer: ${computerScore}`;
+}
+
+function updateScoreMessage(roundWinner, playerSelection, computerSelection) {
+  if (roundWinner === "player") {
+    gameMessage.textContent = `${capitalizeFirstLetter(
+      playerSelection
+    )} beats ${computerSelection.toLowerCase()}`;
+    return;
+  }
+  if (roundWinner === "computer") {
+    gameMessage.textContent = `${capitalizeFirstLetter(
+      playerSelection
+    )} is beaten by ${computerSelection.toLowerCase()}`;
+    return;
+  }
+
+  gameMessage.textContent = `${capitalizeFirstLetter(
+    playerSelection
+  )} ties with ${computerSelection.toLowerCase()}`;
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
+function openEndgameModal() {
+  gameOverModal.classList.add("active");
+  overlay.classList.add("active");
+}
+
+function closeEndgameModal() {
+  gameOverModal.classList.remove("active");
+  overlay.classList.remove("active");
+}
+
+function setGameResults() {
+  return playerScore > computerScore
+    ? (gameOverMsg.textContent = "You won!")
+    : (gameOverMsg.textContent = "You lost...");
+}
+
+function restartGame() {
+  playerScore = 0;
+  computerScore = 0;
+  gameInfo.textContent = "Choose your hand";
+  gameMessage.textContent = "First to score 5 points wins the game";
+  playerScorePara.textContent = "Player: 0";
+  computerScorePara.textContent = "Computer: 0";
+  playerSign.textContent = "﹖";
+  computerSign.textContent = "﹖";
+  gameOverModal.classList.remove("active");
+  overlay.classList.remove("active");
+}
